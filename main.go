@@ -5,10 +5,9 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
-//{ File Upload }//
+// File Uploading
 func FileUpload(w http.ResponseWriter, r *http.Request) {
 	// FormFile to match arguments
 	file, fileHeader, err := r.FormFile("file")
@@ -19,7 +18,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 	os.MkdirAll("./uploads", os.ModePerm)
 
 	// Create a new file in the uploads directory
-	dst, err := os.Create(fmt.Sprintf("./uploads/%s%s", filepath.Base(fileHeader.Filename), filepath.Ext(fileHeader.Filename)))
+	dst, err := os.Create(fmt.Sprintf("./uploads/%s", fileHeader.Filename))
 
 	defer dst.Close()
 
@@ -30,16 +29,15 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Upload successful")
 }
 
-//{ HTTP Routing }//
-func OlRoutes() {
+// HTTP Routing
+func Routing() {
 	http.HandleFunc("/upload", FileUpload)
 	http.ListenAndServe(":9001", nil)
 }
 
 func main() {
 	fmt.Println("Server starting at port: 9001")
-	OlRoutes()
+	Routing()
 }
