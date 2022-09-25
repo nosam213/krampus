@@ -30,7 +30,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// HTTP Routing
+// HTTP/HTTPS Routing
 func Routing(portChoice int16, sslChoice bool) {
 	var portChoiceFormatted string = fmt.Sprintf(":%d", portChoice)
 	FileDownload := http.FileServer(http.Dir("."))
