@@ -1,5 +1,5 @@
 # krampus
-Krampus is a barebone replacement for Python's http.server, but with uploading, written in Go.
+Krampus is a replacement for Python's http.server, but with uploading.
 
 ### Flags
 * --ssl true|false (default false)
