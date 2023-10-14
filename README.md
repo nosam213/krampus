@@ -2,9 +2,11 @@
 Krampus is a replacement for Python's http.server, but with uploading.
 
 ### Flags
+* --help
+* --file-download-path (default "./")
+* --file-upload-path (default "./uploads")
 * --ssl true|false (default false)
 * --port \<port\> (default 9001)
-* --help 
 
 ### SSL
 NOTE: requires exactly named 'cert.pem' and 'key.pem' in executed directory.
