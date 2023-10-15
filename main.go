@@ -10,10 +10,10 @@ import (
 
 const krampusVersion string = "1.2"
 
-var fileUploadPath string = "./uploads" // Default upload path
-var fileDownloadPath string = "./"      // Default download path
-//var sslCertPath string = "./cert.pem"
-//var sslKeyPath string = "./key.pem"
+var fileUploadPath string = "./uploads"
+var fileDownloadPath string = "./"
+var sslCertPath string = "./cert.pem"
+var sslKeyPath string = "./key.pem"
 
 // File Uploads
 func FileUpload(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +55,7 @@ func Routing(portChoice int16, sslChoice bool) {
 
 	if sslChoice == true {
 		// Replace with sslCertPath / sslKeyPath functionality.
-		http.ListenAndServeTLS(portChoiceFormatted, "./cert.pem", "./key.pem", nil)
+		http.ListenAndServeTLS(portChoiceFormatted, sslCertPath, sslKeyPath, nil)
 	} else {
 		http.ListenAndServe(portChoiceFormatted, nil)
 	}
@@ -65,9 +65,11 @@ func main() {
 	var portChoice int16 = 9001
 	pflag.Int16Var(&portChoice, "port", portChoice, "port selection")
 	var sslChoice bool = false
-	pflag.BoolVar(&sslChoice, "ssl", sslChoice, "enables SSL, requires (exactly named) the 'cert.pem' and 'key.pem'")
-	pflag.StringVar(&fileUploadPath, "file-upload-path", fileUploadPath, "file upload path")
-	pflag.StringVar(&fileDownloadPath, "file-download-path", fileDownloadPath, "file serve path")
+	pflag.BoolVar(&sslChoice, "ssl", sslChoice, "enables HTTPS (default ./cert.pem and ./key.pem)") // --ssl
+	pflag.StringVar(&fileUploadPath, "file-upload-path", fileUploadPath, "file upload path")        // --file-upload-path
+	pflag.StringVar(&fileDownloadPath, "file-download-path", fileDownloadPath, "file serve path")   // --file-download-path
+	pflag.StringVar(&sslCertPath, "ssl-cert-path", sslCertPath, "TLS certificate path")             // --ssl-cert-path
+	pflag.StringVar(&sslKeyPath, "ssl-key-path", sslKeyPath, "TLS key path")                        // --ssl-key-path
 
 	pflag.Parse()
 

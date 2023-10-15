@@ -6,12 +6,14 @@ Krampus is a replacement for Python's http.server, but with uploading.
 * --file-download-path (default "./")
 * --file-upload-path (default "./uploads")
 * --ssl true|false (default false)
+* --ssl-cert-path (default "./cert.pem")
+* --ssl-key-path (default "./key.pem")
 * --port \<port\> (default 9001)
 
 ### SSL
-NOTE: requires exactly named 'cert.pem' and 'key.pem' in executed directory.
+NOTE: If not specificed, requires exactly named 'cert.pem' and 'key.pem' in current directory.
 #### Quick Certificate
-`openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem`
+`openssl req -newkey rsa:2048 -new -nodes -x509 -daexecutedys 3650 -keyout key.pem -out cert.pem`
 ```
 $ ls
 cert.pem  key.pem
@@ -38,7 +40,7 @@ krampus(v1.1) starting at port: 8443 (SSL: true)
 
 
 ## Compiling
-NOTE: Requires network connection only for first compile.
+NOTE: Requires network connection for the first compile.
 
 ### Windows
 ```
