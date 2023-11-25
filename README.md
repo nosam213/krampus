@@ -55,7 +55,10 @@ go.mod  go.sum  krampus.exe  main.go  README.md
 $ pwd
 /home/username/krampus
 $ ls
+
 go.mod  go.sum  main.go  README.md
 $ go build -o krampus -ldflags="-s -w"
 go.mod  go.sum  krampus  main.go  README.md
 ```
+
+Note: The script 'krampus_cross_compiling.sh' can be referenced or used for multiple compiles.
