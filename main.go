@@ -8,7 +8,22 @@ import (
 	"os"
 )
 
-const krampusVersion string = "1.2"
+const krampusVersion string = "1.3"
+
+const htmlWebpage string = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Krampus File Upload</title>
+</head>
+<body>
+  <form method="post" enctype="multipart/form-data">
+  <label for="file">File</label>
+    <input id="file" name="file" type="file"></input>
+  <button>Upload</button>
+  </form>
+</body>
+</html>`
 
 var fileUploadPath string = "./uploads"
 var fileDownloadPath string = "./"
@@ -17,6 +32,13 @@ var sslKeyPath string = "./key.pem"
 
 // File Uploads
 func FileUpload(w http.ResponseWriter, r *http.Request) {
+	//-- [GET] --//
+	if r.Method == "GET" {
+		fmt.Fprintf(w, htmlWebpage)
+		return
+	}
+  
+  //-- [POST] --//
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -24,9 +46,9 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	os.MkdirAll(fileUploadPath, os.ModePerm)
+	os.MkdirAll(fileUploadPath, os.ModePerm) // Makes directory if specified not found
 
-	dst, err := os.Create(fmt.Sprintf("%s/%s", fileUploadPath, fileHeader.Filename))
+	dst, err := os.Create(fmt.Sprintf("%s/%s", fileUploadPath, fileHeader.Filename)) // Formats the location + filename
 	defer dst.Close()
 
 	// Copy file[file] to destination[dst]
@@ -38,14 +60,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("[POST] %s \n", fileHeader.Filename)
 }
 
-/*
-// File Downloads
-func FileDownload(w http.ResponseWriter, r *http.Request) {
-  http.FileServer(http.Dir("."))
-  //fmt.Printf("krampus(v1.1) starting at port: %d (SSL: %t)", variable)
-}
-*/
-// HTTP/HTTPS Routing
+// Routing
 func Routing(portChoice int16, sslChoice bool) {
 	var portChoiceFormatted string = fmt.Sprintf(":%d", portChoice)
 	FileDownload := http.FileServer(http.Dir(fileDownloadPath))

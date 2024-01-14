@@ -23,6 +23,9 @@ krampus(v1.1) starting at port: 8443 (SSL: true)
 
 ## Uploading
 
+#### Webpage
+Navigate to `http[:]//<ip>:<port>/upload` for a HTML page with a upload button.
+
 ### Windows
 `C:\> curl -F "file=@<file>" http[:]//<ip>:<port>/upload`
 
