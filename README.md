@@ -3,17 +3,19 @@ Krampus is a replacement for Python's http.server, but with uploading.
 
 ### Flags
 * --help
-* --file-download-path (default "./")
-* --file-upload-path (default "./uploads")
-* --ssl true|false (default false)
-* --ssl-cert-path (default "./cert.pem")
-* --ssl-key-path (default "./key.pem")
-* --port \<port\> (default 9001)
+* --file-download-path string   file download serve location (default "./")
+* --file-upload-path string     file upload serve destination (default "./uploads")
+* -3, --http3                   enables QUIC/HTTP3 (UDP) (experimental)
+* -a, --ip string               ip selection (default "0.0.0.0")
+* -p, --port string             port selection (default "9001")
+* --ssl-cert-path string        TLS certificate path (default "./cert.pem")
+* --ssl-key-path string         TLS key path (default "./key.pem")
+* -e, --tls                     TLS (default @ ./cert.pem ./key.pem)
 
 ### SSL
 NOTE: If not specificed, requires exactly named 'cert.pem' and 'key.pem' in current directory.
 #### Quick Certificate
-`openssl req -newkey rsa:2048 -new -nodes -x509 -daexecutedys 3650 -keyout key.pem -out cert.pem`
+`openssl req -nodes -newkey rsa:4096 -sha512 -new -x509 -days 3650 -keyout key.pem -out cert.pem`
 ```
 $ ls
 cert.pem  key.pem
