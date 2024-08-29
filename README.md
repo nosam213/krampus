@@ -51,7 +51,7 @@ NOTE: Requires network connection for the first compile.
 ```
 C:\Users\username\krampus> dir
 go.mod  go.sum  main.go  README.md
-C:\Users\username\krampus> go build -o krampus.exe -ldflags="-s -w"
+C:\Users\username\krampus> go build -o krampus.exe -ldflags="-w -s -buildid=" .
 go.mod  go.sum  krampus.exe  main.go  README.md
 ```
 
@@ -62,7 +62,7 @@ $ pwd
 $ ls
 
 go.mod  go.sum  main.go  README.md
-$ go build -o krampus -ldflags="-s -w"
+$ go build -o krampus -ldflags="-w -s -buildid=" .
 go.mod  go.sum  krampus  main.go  README.md
 ```
 
