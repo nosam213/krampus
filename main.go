@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/quic-go/quic-go/http3"
-	"github.com/spf13/pflag"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/quic-go/quic-go/http3"
+	"github.com/spf13/pflag"
 )
 
-const krampusVersion string = "1.4"
+const krampusVersion string = "1.5"
 
 const htmlWebpage string = `
 <!DOCTYPE html>
@@ -34,12 +35,13 @@ var sslChoice bool
 var quicChoice bool
 var portChoice string = "9001"
 var ipChoice string = "0.0.0.0"
+var filesServe bool
 
 // file upload handling
 func FileUpload(w http.ResponseWriter, r *http.Request) {
 	// GET
 	if r.Method == "GET" {
-		fmt.Fprintf(w, htmlWebpage)
+		fmt.Fprint(w, htmlWebpage)
 		return
 	}
 
@@ -54,6 +56,10 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 	os.MkdirAll(fileUploadPath, os.ModePerm) // makes directory if specified is not found
 
 	dst, err := os.Create(fmt.Sprintf("%s/%s", fileUploadPath, fileHeader.Filename)) // Formats the location + filename
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, file)
@@ -61,12 +67,14 @@ func FileUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer dst.Close()
 	fmt.Printf("[POST] %s \n", fileHeader.Filename)
 }
 
 func main() {
 	pflag.BoolVarP(&sslChoice, "tls", "e", false, "TLS (default @ ./cert.pem ./key.pem)")                      // -e , --tls
-	pflag.BoolVarP(&quicChoice, "http3", "3", false, "enables QUIC/HTTP3 (UDP) (experimental)")                // -3 , http3
+	pflag.BoolVarP(&quicChoice, "http3", "3", false, "enables QUIC/HTTP3 (UDP) (experimental)")                // -3 , --http3
+	pflag.BoolVarP(&filesServe, "files", "f", false, "enable serving files")                                   // -f , --files
 	pflag.StringVarP(&portChoice, "port", "p", portChoice, "port selection")                                   // -p, --port
 	pflag.StringVarP(&ipChoice, "ip", "a", ipChoice, "ip selection")                                           // -a , --ip
 	pflag.StringVar(&fileUploadPath, "file-upload-path", fileUploadPath, "file upload serve destination")      // --file-upload-path
@@ -77,20 +85,35 @@ func main() {
 
 	// routing
 	var portChoiceFormatted string = fmt.Sprintf("%s:%s", ipChoice, portChoice)
-	FileDownload := http.FileServer(http.Dir(fileDownloadPath))
-	http.HandleFunc("/upload", FileUpload) // http://0.0.0.0:<port>/upload
-	http.Handle("/", FileDownload)         // http://0.0.0.0:<port>/
+	http.HandleFunc("/upload", FileUpload) // http://<address>:<port>/upload
 
-	//fmt.Println(portChoiceFormatted)
-	fmt.Printf("krampus(v%s) running at: %s [SSL: %t]\n", krampusVersion, portChoiceFormatted, sslChoice)
+	fmt.Printf("krampus(v%s) running at: %s [TLS: %t] [Files: %t]\n", krampusVersion, portChoiceFormatted, sslChoice, filesServe)
 
-	if sslChoice == true {
-		if quicChoice == true {
-			http3.ListenAndServeQUIC(portChoiceFormatted, sslCertPath, sslKeyPath, nil)
+	// serving files disable by default
+	if filesServe {
+		FileDownload := http.FileServer(http.Dir(fileDownloadPath))
+		http.Handle("/", FileDownload) // http://0.0.0.0:<port>/
+	}
+
+	if sslChoice {
+		if quicChoice {
+			err := http3.ListenAndServeQUIC(portChoiceFormatted, sslCertPath, sslKeyPath, nil)
+			if err != nil {
+				fmt.Printf("Couldn't bind to %s\n", portChoiceFormatted)
+				os.Exit(1)
+			}
 		} else {
-			http.ListenAndServeTLS(portChoiceFormatted, sslCertPath, sslKeyPath, nil)
+			err := http.ListenAndServeTLS(portChoiceFormatted, sslCertPath, sslKeyPath, nil)
+			if err != nil {
+				fmt.Printf("Couldn't bind to %s\n", portChoiceFormatted)
+				os.Exit(1)
+			}
 		}
 	} else {
-		http.ListenAndServe(portChoiceFormatted, nil)
+		err := http.ListenAndServe(portChoiceFormatted, nil)
+		if err != nil {
+			fmt.Printf("Couldn't bind to %s\n", portChoiceFormatted)
+			os.Exit(1)
+		}
 	}
 }

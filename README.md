@@ -5,6 +5,7 @@ Krampus is a replacement for Python's http.server, but with uploading.
 * --help
 * --file-download-path string   file download serve location (default "./")
 * --file-upload-path string     file upload serve destination (default "./uploads")
+* -f, --files                   enable serving files
 * -3, --http3                   enables QUIC/HTTP3 (UDP) (experimental)
 * -a, --ip string               ip selection (default "0.0.0.0")
 * -p, --port string             port selection (default "9001")
@@ -20,7 +21,7 @@ NOTE: If not specificed, requires exactly named 'cert.pem' and 'key.pem' in curr
 $ ls
 cert.pem  key.pem
 $ krampus --ssl true --port 8443
-krampus(v1.1) starting at port: 8443 (SSL: true)
+krampus(v1.1) starting at port: 8443 (TLS: true)
 ```
 
 ## Uploading
@@ -57,6 +58,7 @@ go.mod  go.sum  krampus.exe  main.go  README.md
 
 ### Unix
 ```
+$ export CGO_ENABLED=0 // Enables static compiling (optional)
 $ pwd
 /home/username/krampus
 $ ls

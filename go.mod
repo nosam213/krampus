@@ -1,8 +1,6 @@
 module krampus
 
-go 1.21
-
-toolchain go1.22.1
+go 1.24
 
 require (
 	github.com/quic-go/quic-go v0.41.0
